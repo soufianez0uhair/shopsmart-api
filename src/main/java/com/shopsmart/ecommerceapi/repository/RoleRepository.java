@@ -1,2 +1,9 @@
-package com.shopsmart.ecommerceapi.repository;public interface RoleRepository {
+package com.shopsmart.ecommerceapi.repository;
+
+import com.shopsmart.ecommerceapi.model.Role;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface RoleRepository extends CrudRepository<Role, Integer> {
 }
