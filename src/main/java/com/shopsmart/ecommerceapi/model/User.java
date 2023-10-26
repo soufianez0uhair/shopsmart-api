@@ -60,6 +60,9 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     public void addRole(Role role) {
+        if(roles == null) {
+            roles = new HashSet<>();
+        }
         roles.add(role);
     }
 }
