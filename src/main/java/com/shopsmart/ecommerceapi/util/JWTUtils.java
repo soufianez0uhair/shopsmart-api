@@ -1,5 +1,6 @@
 package com.shopsmart.ecommerceapi.util;
 
+import com.shopsmart.ecommerceapi.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -37,6 +38,10 @@ public class JWTUtils {
     public static <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
+    }
+
+    public static String generateToken(User user) {
+        return "";
     }
 
 }
