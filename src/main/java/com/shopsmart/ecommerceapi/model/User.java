@@ -1,6 +1,7 @@
 package com.shopsmart.ecommerceapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,11 +29,13 @@ public class User {
     @Column(
             name = "first_name"
     )
+    @NotBlank(message = "First name is required")
     private String firstName;
 
     @Column(
             name = "last_name"
     )
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     private String email;
