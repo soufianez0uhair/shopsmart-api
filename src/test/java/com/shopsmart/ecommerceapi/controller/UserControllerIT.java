@@ -283,4 +283,40 @@ public class UserControllerIT {
         assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
 
+    @Test
+    public void givenUserWithNotOnlyLettersContainingFirstName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+
+        // Given
+        User user = User.builder()
+                .firstName("test0")
+                .lastName("test")
+                .email("test@test.com")
+                .phoneNumber("+212600000000")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/register",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        assertTrue(optionalUser.isEmpty());
+        assertEquals("Please use a valid first name", response.getBody().getMessage());
+        assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
+    }
+
 }
