@@ -1,5 +1,6 @@
 package com.shopsmart.ecommerceapi.service;
 
+import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.repository.RoleRepository;
@@ -15,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
@@ -79,6 +82,30 @@ public class UserServiceTest {
         assertEquals("+212600000000", passedUserToJWT.getPhoneNumber());
         assertEquals("test@123", passedUserToJWT.getPassword());
         assertEquals("someReturnedToken", returnedValue);
+
+    }
+
+    @Test
+    public void givenUserWithAlreadyInUseEmail_whenRegistercustomer_throwResourceAlreadyExists() {
+
+        // Given
+
+        User user = User
+                .builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@test.com")
+                .phoneNumber("+212614671572")
+                .password("test@123")
+                .build();
+
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(any(User.class)));
+
+        // When & Then
+        Exception exception = assertThrows(ResourceAlreadyExists.class, () -> {
+            underTest.registerCustomer(user);
+        });
+        assertEquals("Email is already in use", exception.getMessage());
 
     }
 }
