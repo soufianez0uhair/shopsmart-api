@@ -2,6 +2,7 @@ package com.shopsmart.ecommerceapi.controller;
 
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    private ResponseEntity<String> registerCustomer(@RequestBody User user) {
+    private ResponseEntity<String> registerCustomer(@Valid @RequestBody User user) {
         return new ResponseEntity<String>(
                 userService.registerCustomer(user),
                 HttpStatus.CREATED
