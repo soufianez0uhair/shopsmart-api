@@ -256,7 +256,7 @@ public class UserControllerIT {
                 .lastName("test")
                 .email("test@test.com")
                 .phoneNumber("+212600000000")
-                .password("test@123")
+                .password("")
                 .build();
 
         String requestBody = mapper.writeValueAsString(user);
