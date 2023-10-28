@@ -10,17 +10,21 @@ import com.shopsmart.ecommerceapi.repository.UserRepository;
 import com.shopsmart.ecommerceapi.util.JWTUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,10 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserControllerIT {
 
     @Container
-    public static PostgreSQLContainer<?> psql = new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName(System.getenv("DB_NAME"))
-            .withUsername(System.getenv("DB_USERNAME"))
-            .withPassword(System.getenv("DB_PASSWORD"));
+    public static PostgreSQLContainer<?> psql = new PostgreSQLContainer<>("postgres:latest");
 
     @DynamicPropertySource
     static void configureTestcontainersProperties(DynamicPropertyRegistry registry) {
@@ -103,7 +104,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyFirstName_whenRegisterCustomer_thenReturn404AndThrowMethodArgumentNotValidException() throws JsonProcessingException {
+    public void givenUserWithEmptyFirstName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -135,6 +136,7 @@ public class UserControllerIT {
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         assertTrue(optionalUser.isEmpty());
         assertEquals("First name is required", response.getBody().getMessage());
-        assertEquals("BAD_REQUEST", response.getBody().getStatus());
+        assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
+
 }
