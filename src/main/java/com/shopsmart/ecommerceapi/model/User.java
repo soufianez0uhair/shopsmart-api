@@ -2,6 +2,7 @@ package com.shopsmart.ecommerceapi.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class User {
             name = "first_name"
     )
     @NotBlank(message = "First name is required")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Please use a valid first name")
     private String firstName;
 
     @Column(
