@@ -1,6 +1,7 @@
 package com.shopsmart.ecommerceapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class User {
     private String lastName;
 
     @NotBlank(message = "Email is required")
+    @Email(message = "Please use a valid email")
     private String email;
 
     @Column(
