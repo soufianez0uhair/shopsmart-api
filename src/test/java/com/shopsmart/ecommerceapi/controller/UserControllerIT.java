@@ -104,7 +104,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyFirstName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithEmptyFirstName_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -140,7 +140,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyLastName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithEmptyLastName_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -176,7 +176,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyEmail_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithEmptyEmail_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -212,7 +212,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyPhoneNumber_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithEmptyPhoneNumber_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -248,7 +248,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithEmptyPassword_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithEmptyPassword_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -284,7 +284,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithNotOnlyLettersContainingFirstName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithNotOnlyLettersContainingFirstName_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -320,7 +320,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithNotOnlyLettersContainingLastName_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithNotOnlyLettersContainingLastName_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -356,7 +356,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithOverMaxLastNameLength_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithOverMaxLastNameLength_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -392,7 +392,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenUserWithOverMaxFirstNameLength_whenRegisterCustomer_thenReturn404AndMessage() throws JsonProcessingException {
+    public void givenUserWithOverMaxFirstNameLength_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
