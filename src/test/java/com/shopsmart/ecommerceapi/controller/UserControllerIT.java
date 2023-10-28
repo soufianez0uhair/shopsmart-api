@@ -500,7 +500,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void givenPasswordWithOver20LengthEmail_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
+    public void givenPasswordWithOver20LengthPassword_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
 
         // Given
         User user = User.builder()
@@ -531,7 +531,7 @@ public class UserControllerIT {
 
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         assertTrue(optionalUser.isEmpty());
-        assertEquals("Please use a valid email", response.getBody().getMessage());
+        assertEquals("Password must not exceed 20 characters length", response.getBody().getMessage());
         assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
 
