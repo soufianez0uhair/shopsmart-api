@@ -463,4 +463,40 @@ public class UserControllerIT {
         assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
 
+    @Test
+    public void givenUserWithOver256LengthEmail_whenRegisterCustomer_thenReturn400AndMessage() throws JsonProcessingException {
+
+        // Given
+        User user = User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("FubH2FDt4QcAvYjpDvURgz1Ej7J06nrRUWAuSaP9DZAvEC8K5gZy5nqLDFzTbCw2VD5J4xfWSiDJW9VSUvXixZganH0h6TkGM2Pyt2SQBiB6Mcydp69Cm3hM8qp9XASipBMjRU15GNu2LDa6Kac5A3Jxp4BwFLqb8veS8DfbaaqdTatrZS07STzAZJjqWBhwXgK2qcKQ4554wTd0g1Jr2DithEyHEVw1UG6r0JM9SGbenJHVMwMhTir@gmail.com")
+                .phoneNumber("+212600000000")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/register",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        assertTrue(optionalUser.isEmpty());
+        assertEquals("Please use a valid email", response.getBody().getMessage());
+        assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
+    }
+
 }
