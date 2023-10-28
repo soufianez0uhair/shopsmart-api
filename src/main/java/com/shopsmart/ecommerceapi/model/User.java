@@ -31,7 +31,7 @@ public class User {
             name = "first_name"
     )
     @NotBlank(message = "First name is required")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Please use a valid first name", groups = SecondValidation.class)
+    @Pattern(regexp = "^[a-zA-Z]{0,45}$", message = "Please use a valid first name")
     private String firstName;
 
     @Column(
