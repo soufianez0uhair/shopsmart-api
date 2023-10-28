@@ -571,4 +571,39 @@ public class UserControllerIT {
         assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
 
+    @Test
+    @Sql(statements = "INSERT INTO users (first_name, last_name, email, phone_number, password) VALUES ('test', 'test', 'test@test.com', '+212600000000', 'test@12')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "delete from users", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void givenUserWithAlreadyInUseEmail_whenRegisterCustomer_thenReturn409AndMessage() throws JsonProcessingException {
+        User user = User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@test.com")
+                .phoneNumber("+212600000000")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/register",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        assertNotNull(optionalUser);
+        assertEquals("Email is already in use", response.getBody().getMessage());
+        assertEquals("409 CONFLICT", response.getBody().getHttpStatus().toString());
+    }
+
 }
