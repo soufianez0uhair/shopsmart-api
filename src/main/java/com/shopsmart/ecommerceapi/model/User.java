@@ -38,6 +38,7 @@ public class User {
             name = "last_name"
     )
     @NotBlank(message = "Last name is required")
+    @Pattern(regexp = "^[a-zA-Z]{0,45}$", message = "Please use a valid last name")
     private String lastName;
 
     @NotBlank(message = "Email is required")
