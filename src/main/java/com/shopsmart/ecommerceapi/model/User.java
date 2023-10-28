@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,6 +43,10 @@ public class User {
     @Pattern(regexp = "^[a-zA-Z]{0,45}$", message = "Please use a valid last name")
     private String lastName;
 
+    @Column(
+            length = 256
+    )
+    @Size(max = 256, message = "Please use a valid email")
     @NotBlank(message = "Email is required")
     @Email(message = "Please use a valid email")
     private String email;
