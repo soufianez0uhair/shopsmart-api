@@ -29,9 +29,25 @@ public class ApiExceptionHandler {
                 .httpStatus(HttpStatus.BAD_REQUEST)
                 .build();
 
-        return new ResponseEntity<ApiException>(
+        return new ResponseEntity<>(
                 apiException,
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(ResourceAlreadyExists.class)
+    public ResponseEntity<ApiException> handleResourceAlreadyExistsException(ResourceAlreadyExists e) {
+
+        ApiException apiException = ApiException
+                .builder()
+                .message(e.getMessage())
+                .timestamp(new Date())
+                .httpStatus(HttpStatus.CONFLICT)
+                .build();
+
+        return new ResponseEntity<>(
+                apiException,
+                HttpStatus.CONFLICT
         );
     }
 }

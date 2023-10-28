@@ -599,7 +599,7 @@ public class UserControllerIT {
 
         // Then
 
-        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         assertNotNull(optionalUser);
         assertEquals("Email is already in use", response.getBody().getMessage());
