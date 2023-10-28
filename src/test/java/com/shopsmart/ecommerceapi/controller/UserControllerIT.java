@@ -7,25 +7,44 @@ import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.repository.RoleRepository;
 import com.shopsmart.ecommerceapi.repository.UserRepository;
 import com.shopsmart.ecommerceapi.util.JWTUtils;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
+@Testcontainers
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerIT {
+
+    @Container
+    public static PostgreSQLContainer<?> psql = new PostgreSQLContainer<>("postgres:latest")
+            .withDatabaseName(System.getenv("DB_NAME"))
+            .withUsername(System.getenv("DB_USERNAME"))
+            .withPassword(System.getenv("DB_PASSWORD"));
+
+    @DynamicPropertySource
+    static void configureTestcontainersProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", psql::getJdbcUrl);
+        registry.add("spring.datasource.username", psql::getUsername);
+        registry.add("spring.datasource.password", psql::getPassword);
+    }
 
     @Autowired
     private UserRepository userRepository;
@@ -33,9 +52,16 @@ public class UserControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private JWTUtils jwtUtils;
+
     private ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Test
+    @Sql(statements = "delete from users", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void givenValidUser_whenCreatingCustomer_thenReturn201AndToken() throws JsonProcessingException {
 
         // Given
@@ -64,11 +90,16 @@ public class UserControllerIT {
         // Then
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(user.getEmail(), JWTUtils.extractUsername(response.getBody()));
+        assertEquals(user.getEmail(), jwtUtils.extractEmail(response.getBody()));
 
-        Optional<User> savedUser = userRepository.findByEmail(user.getEmail());
-        assertTrue(savedUser.isPresent());
-        assertEquals(1, user.getRoles().size());
-        assertTrue(user.getRoles().contains("customer"));
+        Optional<User> optionalSavedUser = userRepository.findByEmail(user.getEmail());
+        assertTrue(optionalSavedUser.isPresent());
+        User savedUser = optionalSavedUser.get();
+        assertEquals(1, savedUser.getRoles().size());
+        assertEquals(1, savedUser.getRoles().size());
+        Optional<Role> role = roleRepository.findByName("customer");
+        assertTrue(role.isPresent());
+        assertTrue(savedUser.getRoles().contains(role.get()));
     }
+
 }
