@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
@@ -99,7 +98,7 @@ public class UserServiceTest {
                 .password("test@123")
                 .build();
 
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(any(User.class)));
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // When & Then
         Exception exception = assertThrows(ResourceAlreadyExists.class, () -> {
