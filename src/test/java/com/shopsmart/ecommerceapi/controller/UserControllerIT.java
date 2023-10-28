@@ -351,7 +351,7 @@ public class UserControllerIT {
 
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         assertTrue(optionalUser.isEmpty());
-        assertEquals("Please use a valid first name", response.getBody().getMessage());
+        assertEquals("Please use a valid last name", response.getBody().getMessage());
         assertEquals("400 BAD_REQUEST", response.getBody().getHttpStatus().toString());
     }
 
