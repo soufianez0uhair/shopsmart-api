@@ -57,6 +57,10 @@ public class User {
     @NotBlank(message = "Phone number is required")
     private String phoneNumber;
 
+    @Column(
+            length = 20
+    )
+    @Size(max = 20, message = "Password must not exceed 20 characters length")
     @NotBlank(message = "Password is required")
     private String password;
 
