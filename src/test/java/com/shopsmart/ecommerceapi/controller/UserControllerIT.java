@@ -2,6 +2,7 @@ package com.shopsmart.ecommerceapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopsmart.ecommerceapi.exception.ApiException;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.repository.RoleRepository;
@@ -96,10 +97,44 @@ public class UserControllerIT {
         assertTrue(optionalSavedUser.isPresent());
         User savedUser = optionalSavedUser.get();
         assertEquals(1, savedUser.getRoles().size());
-        assertEquals(1, savedUser.getRoles().size());
         Optional<Role> role = roleRepository.findByName("customer");
         assertTrue(role.isPresent());
         assertTrue(savedUser.getRoles().contains(role.get()));
     }
 
+    @Test
+    public void givenUserWithEmptyFirstName_whenRegisterCustomer_thenReturn404AndThrowMethodArgumentNotValidException() throws JsonProcessingException {
+
+        // Given
+        User user = User.builder()
+                .firstName("")
+                .lastName("test")
+                .email("test@test.com")
+                .phoneNumber("+212600000000")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/register",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        assertTrue(optionalUser.isEmpty());
+        assertEquals("First name is required", response.getBody().getMessage());
+        assertEquals("BAD_REQUEST", response.getBody().getStatus());
+    }
 }
