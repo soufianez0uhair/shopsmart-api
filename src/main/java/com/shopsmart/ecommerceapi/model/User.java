@@ -62,7 +62,7 @@ public class User {
     )
     @Size(max = 20, message = "Password must not exceed 20 characters length")
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Size(min = 8, message = "Password must be at least 8 characters long", groups = SecondValidation.class)
     private String password;
 
     @CreationTimestamp
