@@ -2,6 +2,7 @@ package com.shopsmart.ecommerceapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
+import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.service.UserService;
 import org.junit.Test;
@@ -56,6 +57,31 @@ public class UserControllerTest {
         )
         // Then
                 .andExpect(status().isCreated())
+                .andExpect(content().json(mapper.writeValueAsString(authResponse)));
+    }
+
+    @Test
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturn200AndToken() throws Exception {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        AuthResponse authResponse = AuthResponse.builder().token("someToken").build();
+
+        given(userService.loginCustomer(loginRequest)).willReturn(authResponse);
+
+        // When
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(loginRequest))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                // Then
+                .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(authResponse)));
     }
 

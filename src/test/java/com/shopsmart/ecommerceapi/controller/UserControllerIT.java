@@ -3,6 +3,7 @@ package com.shopsmart.ecommerceapi.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
+import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.exception.ApiException;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -602,6 +602,132 @@ public class UserControllerIT {
         assertNotNull(optionalUser);
         assertEquals("Email is already in use", response.getBody().getMessage());
         assertEquals("409 CONFLICT", response.getBody().getHttpStatus().toString());
+    }
+
+    @Test
+    @Sql(statements = "INSERT INTO users (first_name, last_name, email, phone_number, password) VALUES ('test', 'test', 'test@test.com', '+212600000000', 'test@123')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "delete from users", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturn200AndToken() throws JsonProcessingException {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                AuthResponse.class
+        );
+
+        // Then
+        Optional<User> optionalSavedUser = userRepository.findByEmail(loginRequest.getEmail());
+        assertTrue(optionalSavedUser.isPresent());
+
+        assertEquals(loginRequest.getEmail(), jwtUtils.extractEmail(response.getBody().getToken()));
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+
+    }
+
+    @Test
+    public void givenNonExistingUserEmail_whenLoginCustomer_thenReturn401AndMessage() throws JsonProcessingException {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Email is not linked to any account", response.getBody().getMessage());
+        assertEquals("email", response.getBody().getField());
+    }
+
+    @Test
+    public void givenInvalidUserEmail_whenLoginCustomer_thenReturn401AndMessage() throws JsonProcessingException {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid email", response.getBody().getMessage());
+    }
+
+    @Test
+    @Sql(statements = "INSERT INTO users (first_name, last_name, email, phone_number, password) VALUES ('test', 'test', 'test@test.com', '+212600000000', 'test@12')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "delete from users", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void givenUserWithWrongPassword_whenLoginCustomer_thenReturn400AndMessage() throws JsonProcessingException {
+
+        // Given
+
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("wrongPass")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // when
+
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Incorrect password", response.getBody().getMessage());
     }
 
 }

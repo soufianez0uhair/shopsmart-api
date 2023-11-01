@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.AuthenticationException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +49,39 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(
                 apiException,
                 HttpStatus.CONFLICT
+        );
+    }
+
+    @ExceptionHandler(ResourceDoesNotExist.class)
+    public ResponseEntity<ApiException> handleResourceDoesNotExistException(ResourceDoesNotExist e) {
+
+        ApiException apiException = ApiException
+                .builder()
+                .message(e.getMessage())
+                .timestamp(new Date())
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .field("email")
+                .build();
+
+        return new ResponseEntity<>(
+                apiException,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiException> handleAuthenticationException(AuthenticationException e) {
+
+        ApiException apiException = ApiException
+                .builder()
+                .message(e.getMessage())
+                .timestamp(new Date())
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .build();
+
+        return new ResponseEntity<>(
+                apiException,
+                HttpStatus.BAD_REQUEST
         );
     }
 }
