@@ -3,6 +3,7 @@ package com.shopsmart.ecommerceapi.service;
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
+import com.shopsmart.ecommerceapi.exception.ResourceDoesNotExist;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.repository.RoleRepository;
@@ -144,4 +145,25 @@ public class UserServiceTest {
         assertEquals("test@test.com", userCaptor.getValue().getEmail());
 
     }
+
+    @Test
+    public void givenNonExistingUserEmail_whenLoginCustomer_thenThrowResourceDoesNotExistAndMessage() {
+
+        // Given
+
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        given(userRepository.findByEmail(loginRequest.getEmail())).willReturn(Optional.empty());
+        // When & Then
+        Exception exception = assertThrows(ResourceDoesNotExist.class, () -> {
+            underTest.loginCustomer(loginRequest);
+        });
+        assertEquals("Email is not linked to any account", exception.getMessage());
+
+    }
+
+
 }
