@@ -61,7 +61,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturn201AndToken() throws Exception {
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturn200AndToken() throws Exception {
 
         // Given
         LoginRequest loginRequest = LoginRequest.builder()

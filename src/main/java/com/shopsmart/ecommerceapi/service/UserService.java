@@ -43,6 +43,8 @@ public class UserService {
     }
 
     public AuthResponse loginCustomer(LoginRequest request) {
-        return AuthResponse.builder().build();
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        String token = jwtUtils.generateToken(optionalUser.get());
+        return AuthResponse.builder().token(token).build();
     }
 }

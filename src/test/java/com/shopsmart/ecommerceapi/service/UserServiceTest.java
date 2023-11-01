@@ -1,6 +1,7 @@
 package com.shopsmart.ecommerceapi.service;
 
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
+import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
@@ -106,6 +108,40 @@ public class UserServiceTest {
             underTest.registerCustomer(user);
         });
         assertEquals("Email is already in use", exception.getMessage());
+
+    }
+
+    @Test
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturnToken() {
+
+        // Given
+
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        User user = User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@test.com")
+                .phoneNumber("+212600000000")
+                .password("test@123")
+                .build();
+
+        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+
+        given(userRepository.findByEmail(stringCaptor.capture())).willReturn(Optional.of(user));
+        given(jwtUtils.generateToken(userCaptor.capture())).willReturn("someToken");
+        // When
+        AuthResponse authResponse = underTest.loginCustomer(loginRequest);
+        // Then
+        assertEquals("someToken", authResponse.getToken());
+
+        String capturedEmail = stringCaptor.getValue();
+        assertEquals("test@test.com", capturedEmail);
+        assertEquals("test@test.com", userCaptor.getValue().getEmail());
 
     }
 }
