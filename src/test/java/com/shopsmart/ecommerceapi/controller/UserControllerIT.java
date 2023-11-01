@@ -3,6 +3,7 @@ package com.shopsmart.ecommerceapi.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
+import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.exception.ApiException;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -602,6 +603,40 @@ public class UserControllerIT {
         assertNotNull(optionalUser);
         assertEquals("Email is already in use", response.getBody().getMessage());
         assertEquals("409 CONFLICT", response.getBody().getHttpStatus().toString());
+    }
+
+    @Test
+    @Sql(statements = "INSERT INTO users (first_name, last_name, email, phone_number, password) VALUES ('test', 'test', 'test@test.com', '+212600000000', 'test@123')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "delete from users", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturn200AndToken() throws JsonProcessingException {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                AuthResponse.class
+        );
+
+        // Then
+
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(loginRequest.getEmail(), jwtUtils.extractEmail(response.getBody().getToken()));
+
+        Optional<User> optionalSavedUser = userRepository.findByEmail(loginRequest.getEmail());
+        assertTrue(optionalSavedUser.isPresent());
     }
 
 }
