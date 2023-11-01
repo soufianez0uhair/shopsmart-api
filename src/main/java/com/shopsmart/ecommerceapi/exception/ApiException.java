@@ -15,5 +15,6 @@ public class ApiException {
     private String message;
     private HttpStatus httpStatus;
     private Date timestamp;
+    private String field;
 
 }

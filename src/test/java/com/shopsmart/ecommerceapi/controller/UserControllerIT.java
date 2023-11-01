@@ -639,4 +639,34 @@ public class UserControllerIT {
         assertTrue(optionalSavedUser.isPresent());
     }
 
+    @Test
+    public void givenNonExistingUserEmail_whenLoginCustomer_thenReturn401AndMessage() throws JsonProcessingException {
+
+        // Given
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("test@test.com")
+                .password("test@123")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(loginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<ApiException> response = restTemplate.postForEntity(
+                "/api/v1/users/login",
+                httpEntity,
+                ApiException.class
+        );
+
+        // Then
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Email is not linked to any account", response.getBody().getMessage());
+        assertEquals("email", response.getBody().getField());
+    }
+
 }
