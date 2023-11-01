@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.naming.AuthenticationException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -113,7 +114,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturnToken() {
+    public void givenExistingUserEmailAndPassword_whenLoginCustomer_thenReturnToken() throws AuthenticationException {
 
         // Given
 

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -31,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<AuthResponse> loginCustomer(@Valid @RequestBody LoginRequest request) {
+    private ResponseEntity<AuthResponse> loginCustomer(@Valid @RequestBody LoginRequest request) throws AuthenticationException {
         return ResponseEntity.ok(userService.loginCustomer(request));
     }
 }
