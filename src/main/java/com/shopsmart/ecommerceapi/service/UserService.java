@@ -1,6 +1,7 @@
 package com.shopsmart.ecommerceapi.service;
 
 import com.shopsmart.ecommerceapi.dto.AuthResponse;
+import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -39,5 +40,9 @@ public class UserService {
         user.addRole(role.get());
         userRepository.save(user);
         return AuthResponse.builder().token(jwtUtils.generateToken(user)).build();
+    }
+
+    public AuthResponse loginCustomer(LoginRequest request) {
+        return AuthResponse.builder().build();
     }
 }
