@@ -5,6 +5,7 @@ import com.shopsmart.ecommerceapi.dto.LoginRequest;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.model.ValidationSequenceOrder;
 import com.shopsmart.ecommerceapi.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<AuthResponse> loginCustomer(@RequestBody LoginRequest request) {
+    private ResponseEntity<AuthResponse> loginCustomer(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(userService.loginCustomer(request));
     }
 }
