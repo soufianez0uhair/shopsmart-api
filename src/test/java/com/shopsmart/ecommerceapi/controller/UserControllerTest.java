@@ -1,6 +1,7 @@
 package com.shopsmart.ecommerceapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.service.UserService;
 import org.junit.Test;
@@ -42,7 +43,9 @@ public class UserControllerTest {
                                                         .password("test@123")
                                                                 .build();
 
-        given(userService.registerCustomer(requestBody)).willReturn("ExpectedReturnValue");
+        AuthResponse authResponse = AuthResponse.builder().token("someToken").build();
+
+        given(userService.registerCustomer(requestBody)).willReturn(authResponse);
 
         // When
 
@@ -53,7 +56,7 @@ public class UserControllerTest {
         )
         // Then
                 .andExpect(status().isCreated())
-                .andExpect(content().string("ExpectedReturnValue"));
+                .andExpect(content().json(mapper.writeValueAsString(authResponse)));
     }
 
 }

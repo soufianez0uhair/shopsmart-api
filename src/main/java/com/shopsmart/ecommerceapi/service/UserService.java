@@ -1,5 +1,6 @@
 package com.shopsmart.ecommerceapi.service;
 
+import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -29,7 +30,7 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public String registerCustomer(User user) {
+    public AuthResponse registerCustomer(User user) {
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         if(optionalUser.isPresent()) {
             throw new ResourceAlreadyExists("Email is already in use");
@@ -37,6 +38,6 @@ public class UserService {
         Optional<Role> role = roleRepository.findByName("customer");
         user.addRole(role.get());
         userRepository.save(user);
-        return jwtUtils.generateToken(user);
+        return AuthResponse.builder().token(jwtUtils.generateToken(user)).build();
     }
 }

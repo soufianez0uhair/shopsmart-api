@@ -2,6 +2,7 @@ package com.shopsmart.ecommerceapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.exception.ApiException;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -10,21 +11,18 @@ import com.shopsmart.ecommerceapi.repository.UserRepository;
 import com.shopsmart.ecommerceapi.util.JWTUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -83,16 +81,16 @@ public class UserControllerIT {
         HttpEntity<String> httpEntity = new HttpEntity<>(requestBody, headers);
 
         // When
-        ResponseEntity<String> response = restTemplate.postForEntity(
+        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
                 "/api/v1/users/register",
                 httpEntity,
-                String.class
+                AuthResponse.class
         );
 
         // Then
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(user.getEmail(), jwtUtils.extractEmail(response.getBody()));
+        assertEquals(user.getEmail(), jwtUtils.extractEmail(response.getBody().getToken()));
 
         Optional<User> optionalSavedUser = userRepository.findByEmail(user.getEmail());
         assertTrue(optionalSavedUser.isPresent());

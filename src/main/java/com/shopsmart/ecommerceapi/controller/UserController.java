@@ -1,5 +1,6 @@
 package com.shopsmart.ecommerceapi.controller;
 
+import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.model.User;
 import com.shopsmart.ecommerceapi.model.ValidationSequenceOrder;
 import com.shopsmart.ecommerceapi.service.UserService;
@@ -20,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    private ResponseEntity<String> registerCustomer(@Validated(ValidationSequenceOrder.class) @RequestBody User user) {
+    private ResponseEntity<AuthResponse> registerCustomer(@Validated(ValidationSequenceOrder.class) @RequestBody User user) {
         return new ResponseEntity<>(
                 userService.registerCustomer(user),
                 HttpStatus.CREATED

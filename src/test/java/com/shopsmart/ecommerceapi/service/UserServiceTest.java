@@ -1,5 +1,6 @@
 package com.shopsmart.ecommerceapi.service;
 
+import com.shopsmart.ecommerceapi.dto.AuthResponse;
 import com.shopsmart.ecommerceapi.exception.ResourceAlreadyExists;
 import com.shopsmart.ecommerceapi.model.Role;
 import com.shopsmart.ecommerceapi.model.User;
@@ -52,7 +53,7 @@ public class UserServiceTest {
         given(roleRepository.findByName(anyString())).willReturn(Optional.of(new Role(1, "customer")));
 
         // When
-        String returnedValue = underTest.registerCustomer(userSpy);
+        AuthResponse authResponse = underTest.registerCustomer(userSpy);
         // Then
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         verify(userRepository).findByEmail(stringCaptor.capture());
@@ -80,7 +81,7 @@ public class UserServiceTest {
         assertEquals("test@test.com", passedUserToJWT.getEmail());
         assertEquals("+212600000000", passedUserToJWT.getPhoneNumber());
         assertEquals("test@123", passedUserToJWT.getPassword());
-        assertEquals("someReturnedToken", returnedValue);
+        assertEquals("someReturnedToken", authResponse.getToken());
 
     }
 
