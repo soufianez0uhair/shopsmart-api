@@ -664,7 +664,7 @@ public class UserControllerIT {
 
         // Then
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Email is not linked to any account", response.getBody().getMessage());
         assertEquals("email", response.getBody().getField());
     }

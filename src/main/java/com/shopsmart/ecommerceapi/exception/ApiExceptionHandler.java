@@ -50,4 +50,21 @@ public class ApiExceptionHandler {
                 HttpStatus.CONFLICT
         );
     }
+
+    @ExceptionHandler(ResourceDoesNotExist.class)
+    public ResponseEntity<ApiException> handleResourceDoesNotExistException(ResourceDoesNotExist e) {
+
+        ApiException apiException = ApiException
+                .builder()
+                .message(e.getMessage())
+                .timestamp(new Date())
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .field("email")
+                .build();
+
+        return new ResponseEntity<>(
+                apiException,
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

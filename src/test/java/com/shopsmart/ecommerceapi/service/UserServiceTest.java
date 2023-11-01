@@ -158,10 +158,11 @@ public class UserServiceTest {
 
         given(userRepository.findByEmail(loginRequest.getEmail())).willReturn(Optional.empty());
         // When & Then
-        Exception exception = assertThrows(ResourceDoesNotExist.class, () -> {
+        ResourceDoesNotExist exception = assertThrows(ResourceDoesNotExist.class, () -> {
             underTest.loginCustomer(loginRequest);
         });
         assertEquals("Email is not linked to any account", exception.getMessage());
+        assertEquals("email", exception.getField());
 
     }
 

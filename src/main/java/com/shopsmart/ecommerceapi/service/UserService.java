@@ -46,7 +46,7 @@ public class UserService {
     public AuthResponse loginCustomer(LoginRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if(optionalUser.isEmpty()) {
-            throw new ResourceDoesNotExist("Email is not linked to any account");
+            throw new ResourceDoesNotExist("Email is not linked to any account", "email");
         }
         String token = jwtUtils.generateToken(optionalUser.get());
         return AuthResponse.builder().token(token).build();
